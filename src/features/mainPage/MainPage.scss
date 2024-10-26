@@ -1,0 +1,11 @@
+.card-wrapper {
+  padding: 20px 40px;
+  display: flex;
+  justify-content: center;
+
+  .card-wrapper_card {
+    cursor: pointer;
+    margin: 20px; 
+ 
+  }
+}

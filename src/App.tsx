@@ -1,22 +1,23 @@
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 
 import MainPage from './features/mainPage/MainPage';
+import AddNote from './features/mainPage/AddNote';
+import NotePage from './features/mainPage/Note';
+import Layout from './Layout';
 
 function App() {
-  // const [count, setCount] = useState(0);
-  // const notes = useAppSelector((state) => state.mainPageSlice);
-  // console.log('notes', notes);
-
-  // const { addNote } = mainPageSlice.actions;
-  // const dispatch = useAppDispatch();
-  // const notes = useSelector((state) => state.notes);
-  // const note = useSelector((state) => console.log(state));
-
   return (
     <>
-      <div>
-        <MainPage />
-      </div>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route path="/" element={<MainPage />} />
+            <Route path="/add-note" element={<AddNote />} />
+            <Route path="/note/:id" element={<NotePage />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </>
   );
 }

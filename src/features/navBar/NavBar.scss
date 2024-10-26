@@ -1,0 +1,15 @@
+.navbar {
+  display: flex;
+  justify-content:flex-end;
+  align-items: center;
+  padding: 0 15px;
+  height: 100px;
+  background: purple;
+  width: 100%;
+
+  .navbar_add-button {
+    cursor: pointer;
+    font-size: 32px;
+    color: antiquewhite;
+  }
+}

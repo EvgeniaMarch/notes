@@ -1,0 +1,13 @@
+.note {
+  padding: 20px 40px;
+
+  .note_actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+    
+    .note_actions-tips {
+      cursor: pointer;
+    }
+  }
+}

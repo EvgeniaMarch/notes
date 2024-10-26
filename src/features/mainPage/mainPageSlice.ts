@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { mockNotes } from '../../mocks.ts/mocsNotes';
 
 export interface Note {
   id: string;
@@ -10,8 +11,10 @@ interface NotesState {
   notes: Note[];
 }
 
+const notes = mockNotes;
+
 const initialState: NotesState = {
-  notes: [],
+  notes: notes,
 };
 
 export const mainPageSlice = createSlice({
@@ -19,19 +22,22 @@ export const mainPageSlice = createSlice({
   initialState,
   reducers: {
     addNote: (state, action: PayloadAction<Omit<Note, 'id'>>) => {
-      //генерировать id
       const id = crypto.randomUUID();
-      // state.notes = state.notes.push(action.payload);
-      // state = {...state, notes: [...state.notes, action.payload]};
-      // state.notes = [...state.notes, action.payload]
       state.notes.push({ ...action.payload, id });
     },
     removeNote: (state, action: PayloadAction<string>) => {
       state.notes = state.notes.filter((note) => note.id !== action.payload);
     },
+    editNote: (state, action) => {
+      state.notes = state.notes.map((note) => {
+        if (note.id === action.payload.id) {
+          return action.payload;
+        } else {
+          return note;
+        }
+      });
+    },
   },
 });
 
-export const { addNote, removeNote } = mainPageSlice.actions;
-
-// export default mainPageSlice;
+export const { addNote, removeNote, editNote } = mainPageSlice.actions;
