@@ -2,7 +2,7 @@ import { EditOutlined, DeleteOutlined, LeftOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAppDispatch } from '../../store/store';
+import { RootState, useAppDispatch } from '../../store/store';
 import { editNote, removeNote } from './mainPageSlice';
 
 import './Note.scss';
@@ -10,10 +10,11 @@ import { Button, Form, FormProps, Input, Tooltip } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import { FieldType } from './AddNote';
 
+// todo поправить ошибки ts
 function NotePage() {
   const { id } = useParams();
-  const notes = useSelector((state) => state.notes);
-  const note = notes.notes.find((note) => note.id === id);
+  const notes = useSelector((state: RootState) => state.notes);
+  const note = notes.notesList.find((note) => note.id === id);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const handlerDelete = (id: string) => {
@@ -52,6 +53,7 @@ function NotePage() {
             <div>{note.content}</div>
           </>
         ) : (
+          // todo вынести в отдельный компонент
           <Form onFinish={onFinish}>
             <Form.Item initialValue={note.title} label="Заголовок" name="title">
               <Input />

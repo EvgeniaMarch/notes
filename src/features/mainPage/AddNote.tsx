@@ -44,6 +44,7 @@ function AddNote() {
       <Form.Item
         label="Контент"
         name="content"
+        // todo мин 20 символов
         rules={[{ required: true, message: 'Please input content!' }]}
       >
         <TextArea rows={4} />
