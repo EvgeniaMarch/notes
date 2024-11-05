@@ -1,12 +1,20 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import './App.css';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import "./App.css";
 
-import MainPage from './features/mainPage/MainPage';
-import AddNote from './features/mainPage/AddNote';
-import NotePage from './features/mainPage/Note';
-import Layout from './Layout';
+import MainPage from "./features/mainPage/MainPage";
+import AddNote from "./features/mainPage/AddNote";
+import NotePage from "./features/mainPage/Note";
+import Layout from "./Layout";
+import { useEffect } from "react";
 
 function App() {
+  // пример запроса к серверу
+  useEffect(() => {
+    fetch("/api/notes")
+      .then((response) => response.json())
+      .then((data) => console.log(data));
+  }, []);
+
   return (
     <>
       <BrowserRouter>
