@@ -1,32 +1,28 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import "./App.css";
-
-import MainPage from "./features/mainPage/MainPage";
-import AddNote from "./features/mainPage/AddNote";
-import NotePage from "./features/mainPage/Note";
-import Layout from "./Layout";
-import { useEffect } from "react";
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import './App.css';
+import NotesList from './features/notesList/NotesList';
+import AddNote from './features/notesList/AddNote';
+import NotePage from './features/notesList/Note';
+import Layout from './Layout';
+import CategoriesList from './features/categoriesList/CategoriesList';
+import AddCategory from './features/categoriesList/AddCategory';
+import Category from './features/categoriesList/Category';
 
 function App() {
-  // пример запроса к серверу
-  useEffect(() => {
-    fetch("/api/notes")
-      .then((response) => response.json())
-      .then((data) => console.log(data));
-  }, []);
-
+  // next сделать пути по ресту
   return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route path="/" element={<MainPage />} />
-            <Route path="/add-note" element={<AddNote />} />
-            <Route path="/note/:id" element={<NotePage />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route path="/" element={<CategoriesList />} />
+          <Route path="/category/:id" element={<Category />} />
+          <Route path="/add-category" element={<AddCategory />} />
+          <Route path="/notes" element={<NotesList />} />
+          <Route path="/notes/add-note" element={<AddNote />} />
+          <Route path="/notes/note/:id" element={<NotePage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 

@@ -10,7 +10,7 @@ function NavBar() {
     <div className="navbar">
       <Tooltip title="Добавить заметку">
         <PlusCircleOutlined
-          onClick={() => navigate('/add-note')}
+          onClick={() => navigate('/notes/add-note')}
           className="navbar_add-button"
         />
       </Tooltip>
