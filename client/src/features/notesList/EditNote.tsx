@@ -57,7 +57,7 @@ function EditNote({
           >
             <TextArea />
           </Form.Item>
-          <SelectCategory categoriesOptions={categoriesOptions} />
+          <SelectCategory categoriesOptions={categoriesOptions} note={note} />
           <Button type="primary" htmlType="submit">
             Сохранить
           </Button>
