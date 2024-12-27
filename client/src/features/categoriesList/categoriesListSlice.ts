@@ -14,11 +14,15 @@ export interface Category {
 interface CategoryState {
   categoriesList: Category[];
   notesFromCategory: Note[];
+  loading: boolean;
+  error: string | null;
 }
 
 const initialState: CategoryState = {
   categoriesList: [],
   notesFromCategory: [],
+  loading: false,
+  error: null,
 };
 
 export const loadCategories = createAsyncThunk(
@@ -51,14 +55,20 @@ export const categoriesListSlice = createSlice({
   extraReducers(builder) {
     return builder
       .addCase(loadCategories.fulfilled, (state, action) => {
+        state.loading = false;
         state.categoriesList = action.payload;
+      })
+      .addCase(loadCategories.pending, (state, action) => {
+        state.loading = true;
+      })
+      .addCase(loadCategories.rejected, (state, action) => {
+        state.categoriesList = [];
+        state.loading = false;
+        state.error = 'Что-то пошло не так...:(';
       })
       .addCase(addCategory.fulfilled, (state, action) => {
         state.categoriesList.push({ ...action.payload });
       });
-    // .addCase(loadNotesFromCategory.fulfilled, (state, action) => {
-    //   state.notesFromCategory =
-    // });
   },
 });
 

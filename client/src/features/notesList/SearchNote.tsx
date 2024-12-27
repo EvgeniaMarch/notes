@@ -1,28 +1,28 @@
 import React from 'react';
-import { Note } from './notesListSlice';
 import { Input } from 'antd';
 
 function SearchNote({
-  allNotes,
-  setNotes,
+  searchedByName,
+  setSearchedByName,
 }: {
-  allNotes: Note[];
-  setNotes: (data: Note[]) => void;
+  searchedByName: string | null;
+  setSearchedByName: (data: string) => void;
 }) {
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const find = e.target.value.toLowerCase();
-    const filteredNotes = allNotes.filter((note) => {
-      return note.title.toLowerCase().includes(find);
-    });
-    console.log(e.target.value);
-    console.log('allNotes', allNotes);
-
-    setNotes(filteredNotes);
+    setSearchedByName(find);
   };
+
   return (
-    <div style={{ width: '200px' }}>
-      <Input.Search onChange={onChange} placeholder="найти заметку" />
-    </div>
+    <>
+      <div style={{ width: '200px' }}>
+        <Input.Search
+          onChange={handleChange}
+          placeholder="найти заметку"
+          value={searchedByName || ''}
+        />
+      </div>
+    </>
   );
 }
 

@@ -21,7 +21,7 @@ function NotePage() {
     navigate('/notes');
   };
 
-  const handlerEdit = () => {
+  const handleEdit = () => {
     setIsEdit(true);
   };
 
@@ -34,7 +34,7 @@ function NotePage() {
           <LeftOutlined onClick={() => navigate('/notes')} />
         </Tooltip>
         <Tooltip title="Редактировать" className="note_actions-tips">
-          <EditOutlined onClick={handlerEdit} />
+          <EditOutlined onClick={handleEdit} />
         </Tooltip>
         {id && (
           <Tooltip title="Удалить" className="note_actions-tips">
@@ -50,7 +50,7 @@ function NotePage() {
           </>
         ) : (
           // todo вынести в отдельный компонент +
-          <EditNote note={note} setIsEdit={setIsEdit} />
+          <EditNote note={note} onChangeEditingView={setIsEdit} />
         )}
       </div>
     </div>

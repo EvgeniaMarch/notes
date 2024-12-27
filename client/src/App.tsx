@@ -6,16 +6,24 @@ import NotePage from './features/notesList/Note';
 import Layout from './Layout';
 import CategoriesList from './features/categoriesList/CategoriesList';
 import AddCategory from './features/categoriesList/AddCategory';
-import Category from './features/categoriesList/Category';
+import { useEffect } from 'react';
+import { loadCategories } from './features/categoriesList/categoriesListSlice';
+import { useAppDispatch } from './store/store';
 
 function App() {
   // next сделать пути по ресту
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    // todo loadCategories не должен вызываться больше одного раза в приложении +
+    dispatch(loadCategories());
+  }, [dispatch]);
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route path="/" element={<CategoriesList />} />
-          <Route path="/category/:id" element={<Category />} />
+          <Route path="/category/:id" element={<NotesList />} />
           <Route path="/add-category" element={<AddCategory />} />
           <Route path="/notes" element={<NotesList />} />
           <Route path="/notes/add-note" element={<AddNote />} />

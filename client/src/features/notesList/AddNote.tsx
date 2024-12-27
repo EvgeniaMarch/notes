@@ -24,17 +24,11 @@ function AddNote() {
     label: category.name,
   }));
 
-  useEffect(() => {
-    dispatch(loadCategories());
-  }, [dispatch]);
-  // console.log('categories', categories);
-
   const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
     console.log('values', values);
     const { content, title, category } = values;
     const newCategory = category || null;
     console.log('note', { content, title, categoryId: newCategory });
-    // Question
     dispatch(addNote({ content, title, categoryId: newCategory }));
     navigate(`/notes`);
   };
@@ -65,12 +59,9 @@ function AddNote() {
         // todo мин 20 символов
         rules={[{ required: true, message: 'Please input content!' }]}
       >
-        <TextArea rows={4} />
+        <TextArea rows={4} minLength={3} showCount />
       </Form.Item>
       <SelectCategory categoriesOptions={categoriesOptions} />
-      {/* <Form.Item label="Категория" name="category">
-        <Select options={categoriesOptions} />
-      </Form.Item> */}
       <Button type="primary" htmlType="submit">
         Добавить заметку
       </Button>

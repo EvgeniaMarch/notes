@@ -10,14 +10,13 @@ import SelectCategory from './SelectCategory';
 
 function EditNote({
   note,
-  setIsEdit,
+  onChangeEditingView,
 }: {
   note: Note | undefined;
-  setIsEdit: (data: boolean) => void;
+  onChangeEditingView: (data: boolean) => void;
 }) {
   const dispatch = useAppDispatch();
   const { id } = useParams();
-  console.log('note', note);
   const categories = useAppSelector((state) => state.categories.categoriesList);
   const categoriesOptions = categories.map((category) => ({
     value: category.id,
@@ -25,7 +24,6 @@ function EditNote({
   }));
 
   const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
-    console.log('values', values);
     const { content, title, category } = values;
     const newCategory = category || note?.categoryId;
 
@@ -37,11 +35,11 @@ function EditNote({
           title,
           id,
           // Question
-          categoryId: newCategory,
+          categoryId: newCategory ?? null,
         }),
       );
     }
-    setIsEdit(false);
+    onChangeEditingView(false);
   };
   return (
     <>

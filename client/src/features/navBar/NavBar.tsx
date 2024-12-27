@@ -6,6 +6,7 @@ import { PlusCircleOutlined } from '@ant-design/icons';
 
 function NavBar() {
   const navigate = useNavigate();
+
   return (
     <div className="navbar">
       <Tooltip title="Добавить заметку">

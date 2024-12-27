@@ -9,6 +9,7 @@ router.get('/', async (req, res) => {
   try {
     const notes = await prisma.note.findMany();
     res.json(notes);
+    // res.status(500).json({ error: 'Ошибка при получении заметок' });
   } catch (error) {
     res.status(500).json({ error: 'Ошибка при получении заметок' });
   }
