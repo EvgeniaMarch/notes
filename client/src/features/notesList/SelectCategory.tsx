@@ -1,7 +1,8 @@
 import { Form, Select } from 'antd';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Note } from './notesListSlice';
 
+// todo create additional folders inside notesList
 function SelectCategory({
   categoriesOptions,
   note,
@@ -9,13 +10,17 @@ function SelectCategory({
   categoriesOptions: { value: string; label: string }[];
   note?: Note;
 }) {
-  const getInitialValue = (id: string | null | undefined) => {
-    for (const option of categoriesOptions) {
-      if (option.value === id) {
-        return option.value;
+  // todo use useMemo+
+  const getInitialValue = useCallback(
+    (id: string | null | undefined) => {
+      for (const option of categoriesOptions) {
+        if (option.value === id) {
+          return option.value;
+        }
       }
-    }
-  };
+    },
+    [categoriesOptions],
+  );
   return (
     <Form.Item
       label="Категория"

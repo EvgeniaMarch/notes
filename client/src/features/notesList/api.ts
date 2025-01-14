@@ -1,5 +1,3 @@
-import { useAppSelector } from '../../store/store';
-import { Category } from '../categoriesList/categoriesListSlice';
 import { Note } from './notesListSlice';
 
 export async function apiLoadNotes(): Promise<Note[]> {

@@ -77,6 +77,7 @@ router.get('/:id/notes', async (req, res) => {
         categoryId: req.params.id === 'none' ? null : req.params.id,
       },
     });
+    console.log('notes', notes);
 
     res.json(notes);
   } catch (error) {

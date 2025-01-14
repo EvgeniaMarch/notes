@@ -1,20 +1,25 @@
-import { Input, Select, Button, FormProps, Form } from 'antd';
-import TextArea from 'antd/es/input/TextArea';
-import React from 'react';
+import { Input, Button, FormProps, Form } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { useAppDispatch } from '../../store/store';
-import { addCategory } from './categoriesListSlice';
+import // useAddCategoryMutation,
+// useLoadCategoriesQuery,
+'../notesList/notesListApi';
+import {
+  useAddCategoryMutation,
+  useLoadCategoriesQuery,
+} from './categoriesListApi';
 
 export type FieldType = {
   name: string;
 };
 
 function AddCategory() {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
-    dispatch(addCategory(values));
+  const { refetch } = useLoadCategoriesQuery();
+  const [addCategory] = useAddCategoryMutation();
+  const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
+    await addCategory(values);
     navigate(`/`);
+    refetch();
   };
 
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (

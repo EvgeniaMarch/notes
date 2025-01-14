@@ -3,13 +3,26 @@ import { useAppSelector } from '../../store/store';
 import { Category } from './categoriesListSlice';
 import { Button, Card, Col, Row, Skeleton, Typography } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import // useLazyLoadNotesFromCategoryQuery,
+// useLoadCategoriesQuery,
+'../notesList/notesListApi';
+import { useLoadCategoriesQuery } from './categoriesListApi';
 
 function CategoriesList() {
   const navigate = useNavigate();
 
-  const categories = useAppSelector((state) => state.categories.categoriesList);
+  const { data: categories } = useLoadCategoriesQuery();
+  // const [loadNotesFromCategory] = useLazyLoadNotesFromCategoryQuery();
+
   const loading = useAppSelector((state) => state.categories.loading);
   const error = useAppSelector((state) => state.categories.error);
+
+  const onHandleClick = async (id: string) => {
+    // const data = await loadNotesFromCategory(id);
+    // console.log(data);
+
+    navigate(`/category/${id}`);
+  };
 
   return (
     <>
@@ -26,7 +39,7 @@ function CategoriesList() {
                 <Col span={8} key={category.id}>
                   <Card
                     title={category.name}
-                    onClick={() => navigate(`/category/${category.id}`)}
+                    onClick={() => onHandleClick(category.id)}
                     className="card-wrapper__card"
                     hoverable
                   ></Card>

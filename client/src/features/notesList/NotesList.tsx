@@ -1,34 +1,37 @@
 import { Button, Card, Row, Col, Typography, Skeleton } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import './NotesList.scss';
-import { RootState, useAppDispatch, useAppSelector } from '../../store/store';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { loadNotes, loadNotesFromCategory, Note } from './notesListSlice';
+import { useAppSelector } from '../../store/store';
+import { useEffect, useMemo, useState } from 'react';
+import { Note } from './notesListSlice';
 import SearchNote from './SearchNote';
 import CategoryFilter from './CategoryFilter';
 import {
-  notesListApi,
+  useLazyLoadNotesFromCategoryQuery,
   useLoadNotesQuery,
-  useloadNotesQuery,
 } from './notesListApi';
+import useGetViewedNotes from '../../hooks/getViewedNotes';
+import { useLoadCategoriesQuery } from '../categoriesList/categoriesListApi';
 
 // next useMemo, useCallback, memo
 // todo отображать категорию для каждой заметки +
 // todo правильно сортировать заметки (последняя отредактированная в начале) +
 // todo новая заметка тоже в начале +
 // todo загружать с сервера только необходимые заметки +
+// todo move logic to custom hook+
 function NotesList() {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const allNotes = useAppSelector((state: RootState) => state.notes.notesList);
-  const allCategories = useAppSelector(
-    (state: RootState) => state.categories.categoriesList,
-  );
-  const { data } = useLoadNotesQuery();
+  // const dispatch = useAppDispatch();
+  // const allNotes = useAppSelector((state: RootState) => state.notes.notesList);
+  // const allCategories = useAppSelector(
+  //   (state: RootState) => state.categories.categoriesList,
+  // );
+  const { data: allCategories } = useLoadCategoriesQuery();
+  const { data: allNotes } = useLoadNotesQuery();
+  const [loadNotesFromCategory] = useLazyLoadNotesFromCategoryQuery();
 
   const loading = useAppSelector((state) => state.notes.loading);
   const error = useAppSelector((state) => state.notes.error);
-  const [notes, setNotes] = useState<Note[]>([]);
   const [searchedByName, setSearchedByName] = useState<string | null>(null);
   const [searchedByCategory, setSearchedByCategory] = useState<string | null>(
     null,
@@ -38,55 +41,51 @@ function NotesList() {
   const { id } = useParams();
 
   const categoryToNote = (id: string | null) => {
-    const category = allCategories.find((category) => category.id === id);
+    const category = allCategories?.find((category) => category.id === id);
     return category?.name || 'Без категории';
   };
 
+  // todo move to useMemo+
+  // useEffect(() => {
+  //   const ordredNotes =
+  //     allNotes &&
+  //     allNotes.length &&
+  //     [...allNotes].sort((a, b) => {
+  //       return Date.parse(b.updatedAt) - Date.parse(a.updatedAt);
+  //     });
+  //   if (ordredNotes && ordredNotes.length) {
+  //     setNotes(ordredNotes);
+  //   }
+  // }, [allNotes, id, searchedByName]);
+
+  const orderedNotes = useMemo(
+    () =>
+      allNotes &&
+      allNotes.length &&
+      [...allNotes].sort((a, b) => {
+        return Date.parse(b.updatedAt) - Date.parse(a.updatedAt);
+      }),
+    [allNotes],
+  );
+
+  const viewedNotes = useGetViewedNotes({
+    orderedNotes,
+    searchedByCategory,
+    searchedByName,
+  });
+
+  // todo подумать над упрощением и заставить работать
   useEffect(() => {
-    const ordredNotes = [...allNotes].sort((a, b) => {
-      return Date.parse(b.updatedAt) - Date.parse(a.updatedAt);
-    });
-    setNotes(ordredNotes);
-  }, [allNotes, id, searchedByName]);
-
-  const viewedNotes = useMemo(() => {
-    const foundCategory = allCategories.find(
-      (category) =>
-        searchedByCategory &&
-        category.name.toLowerCase().includes(searchedByCategory),
-    );
-    console.log('foundCategory', foundCategory);
-
-    return notes.filter((note) => {
-      if (searchedByName && !searchedByCategory) {
-        return (
-          note.content.toLowerCase().includes(searchedByName) ||
-          note.title.toLowerCase().includes(searchedByName)
-        );
-      }
-      if (searchedByName && searchedByCategory) {
-        return (
-          (note.content.toLowerCase().includes(searchedByName) ||
-            note.title.toLowerCase().includes(searchedByName)) &&
-          note.categoryId === foundCategory?.id
-        );
-      }
-      if (!searchedByName && searchedByCategory) {
-        return note.categoryId === foundCategory?.id;
-      }
-      if (!searchedByName && !searchedByCategory) {
-        return note;
-      }
-    });
-  }, [allCategories, notes, searchedByCategory, searchedByName]);
-
-  useEffect(() => {
-    if (!id) {
-      dispatch(loadNotes());
-    } else {
-      dispatch(loadNotesFromCategory(id));
+    // if (!id) {
+    //   dispatch(loadNotes());
+    // } else {
+    //   dispatch(loadNotesFromCategory(id));
+    // }
+    if (id) {
+      const data = loadNotesFromCategory(id);
+      console.log(data);
     }
-  }, [dispatch, id]);
+  }, [id, loadNotesFromCategory]);
 
   return (
     <div
@@ -113,29 +112,30 @@ function NotesList() {
       ) : (
         <div className="card-wrapper">
           <Row style={{ width: '100%' }}>
-            {viewedNotes?.map((note: Note) => {
-              return (
-                <Col style={{ width: '33%' }} key={note.id}>
-                  <Card
-                    title={note.title}
-                    onClick={() => navigate(`/notes/note/${note.id}`)}
-                    className="card-wrapper__card"
-                    hoverable
-                  >
-                    <Paragraph
-                      ellipsis={{
-                        rows: 2,
-                      }}
+            {Array.isArray(viewedNotes) &&
+              viewedNotes?.map((note: Note) => {
+                return (
+                  <Col style={{ width: '33%' }} key={note.id}>
+                    <Card
+                      title={note.title}
+                      onClick={() => navigate(`/notes/note/${note.id}`)}
+                      className="card-wrapper__card"
+                      hoverable
                     >
-                      {note.content}
-                    </Paragraph>
-                    <Typography.Text>
-                      Категория: {categoryToNote(note.categoryId)}
-                    </Typography.Text>
-                  </Card>
-                </Col>
-              );
-            })}
+                      <Paragraph
+                        ellipsis={{
+                          rows: 2,
+                        }}
+                      >
+                        {note.content}
+                      </Paragraph>
+                      <Typography.Text>
+                        Категория: {categoryToNote(note.categoryId)}
+                      </Typography.Text>
+                    </Card>
+                  </Col>
+                );
+              })}
           </Row>
         </div>
       )}

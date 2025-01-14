@@ -1,14 +1,10 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
   apiAddNote,
-  apiEditNote,
   apiLoadNotes,
   apiLoadNotesFromCategory,
   apiRemoveNote,
-  apiSearched,
 } from './api';
-import SearchNote from './SearchNote';
-import { Category } from '../categoriesList/categoriesListSlice';
 
 export interface Note {
   id: string;
@@ -68,13 +64,13 @@ export const addNote = createAsyncThunk(
   },
 );
 
-export const editNote = createAsyncThunk(
-  'notesList/editNote',
-  async (note: Note) => {
-    const editedNote = await apiEditNote(note);
-    return editedNote;
-  },
-);
+// export const editNote = createAsyncThunk(
+//   'notesList/editNote',
+//   async (note: Note) => {
+//     const editedNote = await apiEditNote(note);
+//     return editedNote;
+//   },
+// );
 
 export const loadNotesFromCategory = createAsyncThunk(
   'notesList/loadNotesFromCategory',
@@ -90,52 +86,54 @@ export const notesListSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers(builder) {
-    return builder
-      .addCase(loadNotes.fulfilled, (state, action) => {
-        state.notesList = action.payload;
-        state.loading = false;
-      })
-      .addCase(loadNotes.pending, (state, action) => {
-        state.loading = true;
-      })
-      .addCase(loadNotes.rejected, (state, action) => {
-        console.log(action.error.message);
+    return (
+      builder
+        .addCase(loadNotes.fulfilled, (state, action) => {
+          state.notesList = action.payload;
+          state.loading = false;
+        })
+        .addCase(loadNotes.pending, (state) => {
+          state.loading = true;
+        })
+        .addCase(loadNotes.rejected, (state, action) => {
+          console.log(action.error.message);
 
-        state.error = action.error.message;
-        state.loading = false;
-        state.notesList = [];
-      })
-      .addCase(removeNote.fulfilled, (state, action) => {
-        state.notesList = state.notesList.filter(
-          (note) => note.id !== action.payload,
-        );
-      })
-      .addCase(addNote.fulfilled, (state, action) => {
-        // todo id генерируется на сервере +
-        // const id = crypto.randomUUID();
-        state.notesList.push({ ...action.payload });
-      })
-      .addCase(editNote.fulfilled, (state, action) => {
-        const index = state.notesList.findIndex(
-          (note) => note.id === action.payload.id,
-        );
-        state.notesList[index] = action.payload;
-        state.loading = false;
-      })
-      .addCase(editNote.pending, (state, action) => {
-        state.loading = true;
-      })
-      .addCase(editNote.rejected, (state, action) => {
-        state.loading = false;
-        state.error = 'Невозможно отредактировать заметку';
-      })
-      .addCase(loadNotesFromCategory.fulfilled, (state, action) => {
-        state.notesList = action.payload;
-        state.loading = false;
-      })
-      .addCase(loadNotesFromCategory.pending, (state, action) => {
-        state.loading = true;
-      });
+          state.error = action.error.message;
+          state.loading = false;
+          state.notesList = [];
+        })
+        .addCase(removeNote.fulfilled, (state, action) => {
+          state.notesList = state.notesList.filter(
+            (note) => note.id !== action.payload,
+          );
+        })
+        .addCase(addNote.fulfilled, (state, action) => {
+          // todo id генерируется на сервере +
+          // const id = crypto.randomUUID();
+          state.notesList.push({ ...action.payload });
+        })
+        // .addCase(editNote.fulfilled, (state, action) => {
+        //   const index = state.notesList.findIndex(
+        //     (note) => note.id === action.payload.id,
+        //   );
+        //   state.notesList[index] = action.payload;
+        //   state.loading = false;
+        // })
+        // .addCase(editNote.pending, (state, action) => {
+        //   state.loading = true;
+        // })
+        // .addCase(editNote.rejected, (state, action) => {
+        //   state.loading = false;
+        //   state.error = 'Невозможно отредактировать заметку';
+        // })
+        .addCase(loadNotesFromCategory.fulfilled, (state, action) => {
+          state.notesList = action.payload;
+          state.loading = false;
+        })
+        .addCase(loadNotesFromCategory.pending, (state) => {
+          state.loading = true;
+        })
+    );
   },
 });
 

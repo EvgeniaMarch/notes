@@ -1,13 +1,14 @@
 import { Form, Input, Button, FormProps } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
-import React, { useEffect } from 'react';
-import { addNote } from './notesListSlice';
-import { useAppDispatch, useAppSelector } from '../../store/store';
+import React, { useMemo } from 'react';
+// import { addNote } from './notesListSlice';
 import { useNavigate } from 'react-router-dom';
 
 import './AddNote.scss';
-import { loadCategories } from '../categoriesList/categoriesListSlice';
+// import { loadCategories } from '../categoriesList/categoriesListSlice';
 import SelectCategory from './SelectCategory';
+import { useAddNoteMutation, useLoadNotesQuery } from './notesListApi';
+import { useLoadCategoriesQuery } from '../categoriesList/categoriesListApi';
 
 export type FieldType = {
   title: string;
@@ -15,22 +16,38 @@ export type FieldType = {
   category: string;
 };
 
+//todo join AddNote & EditNote
 function AddNote() {
-  const dispatch = useAppDispatch();
+  // const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const categories = useAppSelector((state) => state.categories.categoriesList);
-  const categoriesOptions = categories.map((category) => ({
-    value: category.id,
-    label: category.name,
-  }));
+  const { refetch } = useLoadNotesQuery();
+  const [addNote] = useAddNoteMutation();
+  const { data: categories } = useLoadCategoriesQuery();
+  console.log('categories', categories);
 
-  const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
+  // const categories = useAppSelector((state) => state.categories.categoriesList);
+
+  // todo useMemo +
+  const categoriesOptions = useMemo(
+    () =>
+      categories?.map((category) => ({
+        value: category.id,
+        label: category.name,
+      })),
+    [categories],
+  );
+
+  const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     console.log('values', values);
     const { content, title, category } = values;
     const newCategory = category || null;
     console.log('note', { content, title, categoryId: newCategory });
-    dispatch(addNote({ content, title, categoryId: newCategory }));
-    navigate(`/notes`);
+    // dispatch(addNote({ content, title, categoryId: newCategory }));
+    await addNote({ content, title, categoryId: newCategory }).then(() =>
+      navigate(`/notes`),
+    );
+
+    refetch();
   };
 
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
@@ -61,7 +78,7 @@ function AddNote() {
       >
         <TextArea rows={4} minLength={3} showCount />
       </Form.Item>
-      <SelectCategory categoriesOptions={categoriesOptions} />
+      <SelectCategory categoriesOptions={categoriesOptions || []} />
       <Button type="primary" htmlType="submit">
         Добавить заметку
       </Button>

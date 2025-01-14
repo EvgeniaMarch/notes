@@ -1,24 +1,27 @@
 import { EditOutlined, DeleteOutlined, LeftOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { RootState, useAppDispatch } from '../../store/store';
-import { removeNote } from './notesListSlice';
+// import { useAppDispatch } from '../../store/store';
+// import { removeNote } from './notesListSlice';
 
 import './Note.scss';
 import { Tooltip } from 'antd';
 import EditNote from './EditNote';
+import { useLoadNotesQuery, useRemoveNoteMutation } from './notesListApi';
 
 // todo поправить ошибки ts +
 function NotePage() {
   const { id } = useParams();
-  const notes = useSelector((state: RootState) => state.notes);
-  const note = notes.notesList.find((note) => note.id === id);
-  const dispatch = useAppDispatch();
+  // const notes = useSelector((state: RootState) => state.notes);
+  const { data: notes, refetch } = useLoadNotesQuery();
+  const [removeNote] = useRemoveNoteMutation();
+
+  const note = notes?.find((note) => note.id === id);
   const navigate = useNavigate();
-  const handleDelete = (id: string) => {
-    dispatch(removeNote(id));
-    navigate('/notes');
+  const handleDelete = async (id: string) => {
+    await removeNote(id).then(() => navigate('/notes'));
+
+    refetch();
   };
 
   const handleEdit = () => {
