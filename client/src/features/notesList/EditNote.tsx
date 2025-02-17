@@ -6,7 +6,11 @@ import { FieldType } from './AddNote';
 import { Note } from './notesListSlice';
 import { useParams } from 'react-router-dom';
 import SelectCategory from './SelectCategory';
-import { useEditNoteMutation, useLoadNotesQuery } from './notesListApi';
+import {
+  useEditNoteMutation,
+  useLoadNoteQuery,
+  useLoadNotesQuery,
+} from './notesListApi';
 import { useLoadCategoriesQuery } from '../categoriesList/categoriesListApi';
 
 function EditNote({
@@ -16,58 +20,40 @@ function EditNote({
   note: Note | undefined;
   onChangeEditingView: (data: boolean) => void;
 }) {
-  // const dispatch = useAppDispatch();
-  const { id } = useParams();
-  // const categories = useAppSelector((state) => state.categories.categoriesList);
-  const { data: categories } = useLoadCategoriesQuery();
-  const [editNote] = useEditNoteMutation();
+  // const { id } = useParams();
+  // if (!id) throw new Error('id is required!');
 
-  // todo use useMemo +
-  const categoriesOptions = useMemo(
-    () =>
-      categories?.map((category) => ({
-        value: category.id,
-        label: category.name,
-      })),
-    [categories],
-  );
+  // const { data: categories } = useLoadCategoriesQuery();
+  // const [editNote] = useEditNoteMutation();
 
-  const { data, refetch } = useLoadNotesQuery();
-  console.log('data', data);
+  // const categoriesOptions = useMemo(
+  //   () =>
+  //     categories?.map((category) => ({
+  //       value: category.id,
+  //       label: category.name,
+  //     })),
+  //   [categories],
+  // );
+
+  // const { refetch: refetchAllNotes } = useLoadNotesQuery();
+  // const { refetch } = useLoadNoteQuery(id);
 
   const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
     const { content, title, category } = values;
     const newCategory = category || note?.categoryId;
 
-    if (id) {
-      // dispatch(
-      //   editNote({
-      //     ...note,
-      //     content,
-      //     title,
-      //     id,
-      //     // Question
-      //     categoryId: newCategory ?? null,
-      //   }),
-      // );
-      console.log({
-        ...note,
-        content,
-        title,
-        id,
-      });
+  //   editNote({
+  //     ...note,
+  //     content,
+  //     title,
+  //     id,
+  //     categoryId: newCategory ?? null,
+  //   }).unwrap();
+  //   refetch();
+  //   refetchAllNotes();
 
-      editNote({
-        ...note,
-        content,
-        title,
-        id,
-        categoryId: newCategory ?? null,
-      }).unwrap();
-    }
-    onChangeEditingView(false);
-    refetch();
-  };
+  //   onChangeEditingView(false);
+  // };
   return (
     <>
       {id && (

@@ -8,23 +8,29 @@ import CategoriesList from './features/categoriesList/CategoriesList';
 import AddCategory from './features/categoriesList/AddCategory';
 
 function App() {
-  // next сделать пути по ресту
-  // const dispatch = useAppDispatch();
+  // todo сделать пути по ресту +
 
-  // useEffect(() => {
-  //   // todo loadCategories не должен вызываться больше одного раза в приложении +
-  //   dispatch(loadCategories());
-  // }, [dispatch]);
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route path="/" element={<CategoriesList />} />
+          {/* <Route path="/" element={<CategoriesList />} />
           <Route path="/category/:id" element={<NotesList />} />
           <Route path="/add-category" element={<AddCategory />} />
           <Route path="/notes" element={<NotesList />} />
           <Route path="/notes/add-note" element={<AddNote />} />
-          <Route path="/notes/note/:id" element={<NotePage />} />
+          <Route path="/notes/note/:id" element={<NotePage />} /> */}
+
+          <Route path="/" element={<CategoriesList />} />
+          {/* todo /categories/new */}
+          <Route path="/new-category" element={<AddCategory />} />
+          {/* todo Во множ. числе */}
+          <Route path="/category/:id" element={<NotesList />} />
+          <Route path="/notes" element={<NotesList />} />
+          {/* todo /notes/new */}
+          <Route path="/new-note" element={<AddNote />} />
+          {/* todo Во множ. числе */}
+          <Route path="/note/:id" element={<NotePage />} />
         </Route>
       </Routes>
     </BrowserRouter>

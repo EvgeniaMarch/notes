@@ -14,15 +14,13 @@ function SearchNote({
   };
 
   return (
-    <>
-      <div style={{ width: '200px' }}>
-        <Input.Search
-          onChange={handleChange}
-          placeholder="найти заметку"
-          value={searchedByName || ''}
-        />
-      </div>
-    </>
+    <div style={{ width: '200px' }}>
+      <Input.Search
+        onChange={handleChange}
+        placeholder="найти заметку"
+        value={searchedByName || ''}
+      />
+    </div>
   );
 }
 

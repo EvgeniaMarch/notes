@@ -3,30 +3,25 @@ import { Note } from './notesListSlice';
 
 // Define a service using a base URL and expected endpoints
 export const notesListApi = createApi({
+  tagTypes: ['Notes'],
   reducerPath: 'notesListApi',
   baseQuery: fetchBaseQuery({ baseUrl: '/api' }),
   endpoints: (builder) => ({
-    loadNotes: builder.query<Note[], void>({
-      query: () => `/notes`,
-    }),
+    // loadNotes: builder.query<Note[], void>({
+    //   query: () => `/notes`,
+    // }),
     // loadCategories: builder.query<Category[], void>({
     //   query: () => `/categories`,
     // }),
-    removeNote: builder.mutation<Note[], string>({
-      query: (id) => {
-        console.log('id', id);
-        return {
-          url: `/notes/${id}`,
-          method: 'delete',
-        };
-      },
-    }),
+
     addNote: builder.mutation<Note, Omit<Note, 'id' | 'updatedAt'>>({
       query: (body) => ({
         url: '/notes',
         method: 'post',
         body: body,
       }),
+      invalidatesTags: (result, error, arg) => [{ type: 'Notes', id: arg.id }], // id: body.categoryId, обновить LIST
+      // если создается заметка без категории, то id: no_category
     }),
     // addCategory: builder.mutation<Category, Category>({
     //   query: (body) => ({
@@ -35,14 +30,41 @@ export const notesListApi = createApi({
     //     body,
     //   }),
     // }),
-    loadNote: builder.query<Note, Note>({
+    loadNote: builder.query<Note, string>({
       query: (id) => ({
         url: `/notes/${id}`,
       }),
-      // providesTags: (result, error, id) => [{ type: 'Post', id }],
+      providesTags: (result, error, id) => [{ type: 'Notes', id }],
     }),
-    loadNotesFromCategory: builder.query<Note[], string>({
-      query: (id) => `/categories/${id}/notes`,
+    loadNotes: builder.query<Note[], string | void>({
+      query: (categoryId) =>
+        categoryId ? `/categories/${categoryId}/notes` : `/notes`,
+      providesTags: (result, error, arg) => {
+        console.log(arg);
+        // if(arg === no-categoty)
+        return [
+          ...(result ?? []).map(({ id }) => ({ type: 'Notes' as const, id })),
+
+          { type: 'Notes', id: arg ? `${arg}_category` : 'LIST' },
+        ];
+      },
+    }),
+    removeNote: builder.mutation<Note[], Note>({
+      // в параметры передавать Note
+      // todo все доделать. AddNote -> что должно и не должно перезагружаться
+      // Проверить как работают все заметки
+      query: (note) => {
+        console.log('id', note.id);
+        return {
+          url: `/notes/${note.id}`,
+          method: 'delete',
+        };
+      },
+      invalidatesTags: (result, error, note) => [
+        { type: 'Notes', id: note.id },
+        // { type: 'Notes', id: `no_category` },
+        // { type: 'Notes', id: 'LIST' },
+      ],
     }),
     editNote: builder.mutation<Note, Omit<Note, 'updatedAt'>>({
       query: ({ id, ...patch }) => {
@@ -54,7 +76,10 @@ export const notesListApi = createApi({
           body: patch,
         };
       },
-      transformResponse: (response: { data: Note }) => response.data,
+      invalidatesTags: (result, error, note) => [
+        { type: 'Notes', id: note.id },
+      ],
+      // transformResponse: (response: { data: Note }) => response.data,
       // async onQueryStarted({ id, ...patch }, { dispatch, queryFulfilled }) {
       //   const patchResult = dispatch(
       //     notesListApi.util.updateQueryData(
@@ -85,5 +110,4 @@ export const {
   useAddNoteMutation,
   useEditNoteMutation,
   useLoadNoteQuery,
-  useLazyLoadNotesFromCategoryQuery,
 } = notesListApi;

@@ -1,11 +1,18 @@
-.card-wrapper {
-  width: 100%;
+.container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
-
-  .card-wrapper__card {
-    cursor: pointer;
-    margin: 20px; 
- 
+  align-items: center;
+  padding: 20px;
+  .card-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  
+    .card-wrapper__card {
+      cursor: pointer;
+      margin: 20px; 
+   
+    }
   }
 }

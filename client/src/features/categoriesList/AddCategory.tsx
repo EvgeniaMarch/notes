@@ -14,12 +14,12 @@ export type FieldType = {
 
 function AddCategory() {
   const navigate = useNavigate();
-  const { refetch } = useLoadCategoriesQuery();
-  const [addCategory] = useAddCategoryMutation();
+  // const { refetch } = useLoadCategoriesQuery();
+  const [addCategory] = useAddCategoryMutation(); // todo показать успешный тост или тост с ошибкой
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     await addCategory(values);
     navigate(`/`);
-    refetch();
+    // refetch();
   };
 
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
@@ -38,7 +38,7 @@ function AddCategory() {
       <Form.Item
         label="Название"
         name="name"
-        rules={[{ required: true, message: 'Please input тфьу!' }]}
+        rules={[{ required: true, message: 'Please input name!' }]}
       >
         <Input />
       </Form.Item>

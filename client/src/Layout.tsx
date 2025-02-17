@@ -1,12 +1,11 @@
-// import { Header } from 'antd/es/layout/layout';
 import { Outlet } from 'react-router-dom';
-import Header from './componets/Header';
+import NavBar from './features/navBar/NavBar';
 
 // про дизайн. не связан с данными
 function Layout(): JSX.Element {
   return (
     <div className="root-container">
-      <Header />
+      <NavBar />
       <Outlet />
     </div>
   );

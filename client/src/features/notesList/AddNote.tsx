@@ -2,13 +2,20 @@ import { Form, Input, Button, FormProps } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import React, { useMemo } from 'react';
 // import { addNote } from './notesListSlice';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import './AddNote.scss';
 // import { loadCategories } from '../categoriesList/categoriesListSlice';
 import SelectCategory from './SelectCategory';
-import { useAddNoteMutation, useLoadNotesQuery } from './notesListApi';
+import {
+  useAddNoteMutation,
+  useEditNoteMutation,
+  useLoadNoteQuery,
+  useLoadNotesQuery,
+} from './notesListApi';
 import { useLoadCategoriesQuery } from '../categoriesList/categoriesListApi';
+import { Note } from './notesListSlice';
+import { Bounce, toast, ToastContainer } from 'react-toastify';
 
 export type FieldType = {
   title: string;
@@ -16,18 +23,25 @@ export type FieldType = {
   category: string;
 };
 
-//todo join AddNote & EditNote
-function AddNote() {
-  // const dispatch = useAppDispatch();
+//todo join AddNote & EditNote +
+function AddNote({
+  note,
+  onChangeEditingView,
+}: {
+  note?: Note;
+  onChangeEditingView?: (data: boolean) => void;
+}) {
   const navigate = useNavigate();
-  const { refetch } = useLoadNotesQuery();
   const [addNote] = useAddNoteMutation();
   const { data: categories } = useLoadCategoriesQuery();
+  const { id } = useParams();
+  if (!id && note) throw new Error('id is required!');
+  // const { refetch: refetchAllNotes } = useLoadNotesQuery();
+  // const { refetch } = useLoadNoteQuery(id);
+
+  const [editNote] = useEditNoteMutation();
   console.log('categories', categories);
 
-  // const categories = useAppSelector((state) => state.categories.categoriesList);
-
-  // todo useMemo +
   const categoriesOptions = useMemo(
     () =>
       categories?.map((category) => ({
@@ -38,16 +52,51 @@ function AddNote() {
   );
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
-    console.log('values', values);
     const { content, title, category } = values;
-    const newCategory = category || null;
-    console.log('note', { content, title, categoryId: newCategory });
-    // dispatch(addNote({ content, title, categoryId: newCategory }));
-    await addNote({ content, title, categoryId: newCategory }).then(() =>
-      navigate(`/notes`),
-    );
+    if (note && onChangeEditingView) {
+      const newCategory = category || note?.categoryId;
 
-    refetch();
+      editNote({
+        ...note,
+        content,
+        title,
+        id,
+        categoryId: newCategory ?? null,
+      }).unwrap();
+      // .then(() => navigate(`/notes`));
+      // refetch();
+      toast('Note changed!!', {
+        position: 'top-center',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        // progress: undefined,
+        theme: 'light',
+        transition: Bounce,
+      });
+
+      onChangeEditingView(false);
+    } else {
+      const newCategory = category || null;
+      await addNote({ content, title, categoryId: newCategory }).then(() =>
+        navigate(`/notes`),
+      );
+      toast('Note created!!', {
+        position: 'top-center',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+        transition: Bounce,
+      });
+    }
+
+    // refetchAllNotes();
   };
 
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
@@ -56,33 +105,40 @@ function AddNote() {
     console.log('Failed:', errorInfo);
   };
   return (
-    <Form
-      initialValues={{ remember: true }}
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-      autoComplete="off"
-      className="add-form"
-    >
-      <Form.Item
-        label="Заголовок"
-        name="title"
-        rules={[{ required: true, message: 'Please input title!' }]}
+    <>
+      <Form
+        initialValues={{ remember: true }}
+        onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
+        autoComplete="off"
+        className="add-form"
       >
-        <Input />
-      </Form.Item>
-      <Form.Item
-        label="Контент"
-        name="content"
-        // todo мин 20 символов
-        rules={[{ required: true, message: 'Please input content!' }]}
-      >
-        <TextArea rows={4} minLength={3} showCount />
-      </Form.Item>
-      <SelectCategory categoriesOptions={categoriesOptions || []} />
-      <Button type="primary" htmlType="submit">
-        Добавить заметку
-      </Button>
-    </Form>
+        <Form.Item
+          label="Заголовок"
+          name="title"
+          rules={[{ required: true, message: 'Please input title!' }]}
+          initialValue={note?.title}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          initialValue={note?.content}
+          label="Контент"
+          name="content"
+          // todo мин 20 символов
+          rules={[{ required: true, message: 'Please input content!' }]}
+        >
+          <TextArea rows={4} minLength={3} showCount />
+        </Form.Item>
+        <SelectCategory
+          categoriesOptions={categoriesOptions || []}
+          note={note}
+        />
+        <Button type="primary" htmlType="submit">
+          {note ? 'Сохранить' : 'Добавить заметку'}
+        </Button>
+      </Form>
+    </>
   );
 }
 

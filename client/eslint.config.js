@@ -5,6 +5,7 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 // import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 
+// todo add react plugin
 export default tseslint.config(
   { ignores: ['dist'] },
   {

@@ -7,21 +7,32 @@ import { useNavigate, useParams } from 'react-router-dom';
 import './Note.scss';
 import { Tooltip } from 'antd';
 import EditNote from './EditNote';
-import { useLoadNotesQuery, useRemoveNoteMutation } from './notesListApi';
+import {
+  useLoadNoteQuery,
+  useLoadNotesQuery,
+  useRemoveNoteMutation,
+} from './notesListApi';
+import AddNote from './AddNote';
+import { Bounce, ToastContainer } from 'react-toastify';
+import { Note } from './notesListSlice';
 
 // todo поправить ошибки ts +
 function NotePage() {
   const { id } = useParams();
+  if (!id) throw new Error('id is required!');
+  // const { data } = useLoadNoteQuery(id);
   // const notes = useSelector((state: RootState) => state.notes);
-  const { data: notes, refetch } = useLoadNotesQuery();
+  // const { data: notes, refetch } = useLoadNotesQuery();
   const [removeNote] = useRemoveNoteMutation();
+  const { data: note } = useLoadNoteQuery(id);
+  // const { refetch } = useLoadNotesQuery();
 
-  const note = notes?.find((note) => note.id === id);
+  // const note = notes?.find((note) => note.id === id);
   const navigate = useNavigate();
-  const handleDelete = async (id: string) => {
-    await removeNote(id).then(() => navigate('/notes'));
+  const handleDelete = async (note: Note) => {
+    await removeNote(note).then(() => navigate(`/category/${note.categoryId}`));
 
-    refetch();
+    // refetch();
   };
 
   const handleEdit = () => {
@@ -34,14 +45,14 @@ function NotePage() {
     <div className="note">
       <div className="note_actions">
         <Tooltip title="К списку заметок" className="note_actions-tips">
-          <LeftOutlined onClick={() => navigate('/notes')} />
+          <LeftOutlined onClick={() => navigate(-1)} />
         </Tooltip>
         <Tooltip title="Редактировать" className="note_actions-tips">
           <EditOutlined onClick={handleEdit} />
         </Tooltip>
         {id && (
           <Tooltip title="Удалить" className="note_actions-tips">
-            <DeleteOutlined onClick={() => handleDelete(id)} />
+            <DeleteOutlined onClick={() => handleDelete(note)} />
           </Tooltip>
         )}
       </div>
@@ -53,9 +64,22 @@ function NotePage() {
           </>
         ) : (
           // todo вынести в отдельный компонент +
-          <EditNote note={note} onChangeEditingView={setIsEdit} />
+          <AddNote note={note} onChangeEditingView={setIsEdit} />
         )}
       </div>
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition={Bounce}
+      />
     </div>
   );
 }

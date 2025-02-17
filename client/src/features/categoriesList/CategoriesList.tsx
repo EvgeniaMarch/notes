@@ -1,55 +1,89 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useAppSelector } from '../../store/store';
-import { Category } from './categoriesListSlice';
 import { Button, Card, Col, Row, Skeleton, Typography } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import // useLazyLoadNotesFromCategoryQuery,
 // useLoadCategoriesQuery,
 '../notesList/notesListApi';
 import { useLoadCategoriesQuery } from './categoriesListApi';
+import { Category } from './categoriesListSlice';
+
+type ErrorType = {
+  error: string;
+};
 
 function CategoriesList() {
   const navigate = useNavigate();
 
-  const { data: categories } = useLoadCategoriesQuery();
-  // const [loadNotesFromCategory] = useLazyLoadNotesFromCategoryQuery();
+  const { data: categories, error, isLoading } = useLoadCategoriesQuery(); // todo показать тост с ошибкой
 
-  const loading = useAppSelector((state) => state.categories.loading);
-  const error = useAppSelector((state) => state.categories.error);
+  // todo rewrite to rtk query+
 
-  const onHandleClick = async (id: string) => {
-    // const data = await loadNotesFromCategory(id);
-    // console.log(data);
+  // discuss если функция передается в качестве пропса в какой-либо компонент, то обязательно оборачивать в useCallback
+  // const onHandleClick = useCallback(
+  //   (id: string) => {
+  //     navigate(`/category/${id}`);
+  //   },
+  //   [navigate],
+  // );
 
-    navigate(`/category/${id}`);
-  };
+  // const onHandleClick = useCallback(
+  //   (e) => {
+
+  //   },
+  //   [navigate],
+  // );
+
+  const handleNavigateToNoCategoty = useCallback(
+    () => navigate(`/category/no-category`),
+    [navigate],
+  );
+  const handleNavigateToNotes = useCallback(
+    () => navigate('/notes'),
+    [navigate],
+  );
+  const handleNavigateToNewCategory = useCallback(
+    () => navigate('/new-category'),
+    [navigate],
+  );
 
   return (
     <>
       <Typography.Text>Категории</Typography.Text>
-      {error ? (
-        <div>{error}</div>
-      ) : loading ? (
+
+      {/* {error && 'error' in error && <div>{error.error}</div>} */}
+      {error &&
+        ('data' in error ? (
+          // todo погуглить как типизировать ошибку в categoriesListApi
+          <div>{(error.data as ErrorType).error}</div>
+        ) : (
+          <div>Произошла ошибка!</div>
+        ))}
+
+      {isLoading ? (
         <Skeleton />
       ) : (
         <div>
           <Row gutter={16}>
-            {categories?.map((category: Category) => {
+            {categories?.map((category) => {
               return (
-                <Col span={8} key={category.id}>
-                  <Card
-                    title={category.name}
-                    onClick={() => onHandleClick(category.id)}
-                    className="card-wrapper__card"
-                    hoverable
-                  ></Card>
-                </Col>
+                // <Col span={8} key={category.id}>
+                //   <Card
+                //     title={category.name}
+                //     // todo починить оптимизацию, сохранить ссылку
+                //     onClick={onHandleClick}
+                //     className="card-wrapper__card"
+                //     hoverable
+                //   ></Card>
+                // </Col>
+                <CategoryView category={category} />
               );
             })}
             <Col span={8}>
               <Card
                 title={'Заметки без категории'}
-                onClick={() => navigate(`/category/no-category`)}
+                // todo useCallback
+                onClick={handleNavigateToNoCategoty}
                 className="card-wrapper__card"
                 hoverable
               ></Card>
@@ -57,8 +91,9 @@ function CategoriesList() {
           </Row>
         </div>
       )}
-      <Button onClick={() => navigate('/notes')}>Ко всем заметкам</Button>
-      <Button onClick={() => navigate('/add-category')}>
+      <Button onClick={handleNavigateToNotes}>Ко всем заметкам</Button>
+      {/* <Link to="/notes">Ко всем заметкам</Link> */}
+      <Button onClick={handleNavigateToNewCategory}>
         Добавить новую категорию
       </Button>
     </>
@@ -66,3 +101,23 @@ function CategoriesList() {
 }
 
 export default CategoriesList;
+
+const CategoryView = ({ category }: { category: Category }) => {
+  const navigate = useNavigate();
+
+  const onHandleClick = useCallback(() => {
+    navigate(`/category/${category.id}`);
+  }, [category.id, navigate]);
+
+  return (
+    <Col span={8} key={category.id}>
+      <Card
+        title={category.name}
+        // todo починить оптимизацию, сохранить ссылку
+        onClick={onHandleClick}
+        className="card-wrapper__card"
+        hoverable
+      ></Card>
+    </Col>
+  );
+};
