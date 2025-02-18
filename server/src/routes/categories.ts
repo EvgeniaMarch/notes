@@ -72,9 +72,17 @@ router.delete('/:id', async (req, res) => {
 // Получить все заметки по ID категории
 router.get('/:id/notes', async (req, res) => {
   try {
+    const search = req.query.search as string | undefined;
     const notes = await prisma.note.findMany({
       where: {
         categoryId: req.params.id === 'no-category' ? null : req.params.id,
+        OR:
+          search === undefined
+            ? undefined
+            : [
+                { title: { contains: search, mode: 'insensitive' } },
+                { content: { contains: search, mode: 'insensitive' } },
+              ],
       },
     });
     console.log('notes', notes);

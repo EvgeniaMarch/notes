@@ -7,7 +7,18 @@ const prisma = new PrismaClient();
 // Получить все заметки
 router.get('/', async (req, res) => {
   try {
-    const notes = await prisma.note.findMany();
+    const search = req.query.search as string | undefined;
+    const notes = await prisma.note.findMany({
+      where:
+        search === undefined
+          ? {}
+          : {
+              OR: [
+                { title: { contains: search, mode: 'insensitive' } },
+                { content: { contains: search, mode: 'insensitive' } },
+              ],
+            },
+    });
     res.json(notes);
     // res.status(500).json({ error: 'Ошибка при получении заметок' });
   } catch (error) {
