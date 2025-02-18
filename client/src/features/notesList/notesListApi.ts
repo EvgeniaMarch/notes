@@ -20,6 +20,7 @@ export const notesListApi = createApi({
         method: 'post',
         body: body,
       }),
+      // todo important
       invalidatesTags: (result, error, arg) => [{ type: 'Notes', id: arg.id }], // id: body.categoryId, обновить LIST
       // если создается заметка без категории, то id: no_category
     }),

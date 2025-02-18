@@ -1,14 +1,14 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import './App.css';
-import NotesList from './features/notesList/NotesList';
-import AddNote from './features/notesList/AddNote';
-import NotePage from './features/notesList/Note';
-import Layout from './Layout';
-import CategoriesList from './features/categoriesList/CategoriesList';
-import AddCategory from './features/categoriesList/AddCategory';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import "./App.css";
+import NotesList from "./features/notesList/NotesList";
+import AddNote from "./features/notesList/AddNote";
+import NotePage from "./features/notesList/Note";
+import Layout from "./Layout";
+import CategoriesList from "./features/categoriesList/CategoriesList";
+import AddCategory from "./features/categoriesList/AddCategory";
 
 function App() {
-  // todo сделать пути по ресту +
+  // todo important сделать пути по ресту
 
   return (
     <BrowserRouter>

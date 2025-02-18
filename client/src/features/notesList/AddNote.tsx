@@ -1,21 +1,21 @@
-import { Form, Input, Button, FormProps } from 'antd';
-import TextArea from 'antd/es/input/TextArea';
-import React, { useMemo } from 'react';
+import { Form, Input, Button, FormProps } from "antd";
+import TextArea from "antd/es/input/TextArea";
+import React, { useMemo } from "react";
 // import { addNote } from './notesListSlice';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from "react-router-dom";
 
-import './AddNote.scss';
+import "./AddNote.scss";
 // import { loadCategories } from '../categoriesList/categoriesListSlice';
-import SelectCategory from './SelectCategory';
+import SelectCategory from "./SelectCategory";
 import {
   useAddNoteMutation,
   useEditNoteMutation,
   useLoadNoteQuery,
   useLoadNotesQuery,
-} from './notesListApi';
-import { useLoadCategoriesQuery } from '../categoriesList/categoriesListApi';
-import { Note } from './notesListSlice';
-import { Bounce, toast, ToastContainer } from 'react-toastify';
+} from "./notesListApi";
+import { useLoadCategoriesQuery } from "../categoriesList/categoriesListApi";
+import { Note } from "./notesListSlice";
+import { Bounce, toast, ToastContainer } from "react-toastify";
 
 export type FieldType = {
   title: string;
@@ -23,7 +23,7 @@ export type FieldType = {
   category: string;
 };
 
-//todo join AddNote & EditNote +
+//todo important если теперь этот компонент будет использоваться для создания и редактирования, то нужно будет переименовать его как-то по-другому
 function AddNote({
   note,
   onChangeEditingView,
@@ -35,12 +35,12 @@ function AddNote({
   const [addNote] = useAddNoteMutation();
   const { data: categories } = useLoadCategoriesQuery();
   const { id } = useParams();
-  if (!id && note) throw new Error('id is required!');
+  if (!id && note) throw new Error("id is required!");
   // const { refetch: refetchAllNotes } = useLoadNotesQuery();
   // const { refetch } = useLoadNoteQuery(id);
 
   const [editNote] = useEditNoteMutation();
-  console.log('categories', categories);
+  console.log("categories", categories);
 
   const categoriesOptions = useMemo(
     () =>
@@ -48,10 +48,10 @@ function AddNote({
         value: category.id,
         label: category.name,
       })),
-    [categories],
+    [categories]
   );
 
-  const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
+  const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
     const { content, title, category } = values;
     if (note && onChangeEditingView) {
       const newCategory = category || note?.categoryId;
@@ -65,15 +65,15 @@ function AddNote({
       }).unwrap();
       // .then(() => navigate(`/notes`));
       // refetch();
-      toast('Note changed!!', {
-        position: 'top-center',
+      toast("Note changed!!", {
+        position: "top-center",
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: false,
         pauseOnHover: true,
         draggable: true,
         // progress: undefined,
-        theme: 'light',
+        theme: "light",
         transition: Bounce,
       });
 
@@ -81,17 +81,17 @@ function AddNote({
     } else {
       const newCategory = category || null;
       await addNote({ content, title, categoryId: newCategory }).then(() =>
-        navigate(`/notes`),
+        navigate(`/notes`)
       );
-      toast('Note created!!', {
-        position: 'top-center',
+      toast("Note created!!", {
+        position: "top-center",
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: false,
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        theme: 'light',
+        theme: "light",
         transition: Bounce,
       });
     }
@@ -99,10 +99,10 @@ function AddNote({
     // refetchAllNotes();
   };
 
-  const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
-    errorInfo,
+  const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (
+    errorInfo
   ) => {
-    console.log('Failed:', errorInfo);
+    console.log("Failed:", errorInfo);
   };
   return (
     <>
@@ -116,7 +116,7 @@ function AddNote({
         <Form.Item
           label="Заголовок"
           name="title"
-          rules={[{ required: true, message: 'Please input title!' }]}
+          rules={[{ required: true, message: "Please input title!" }]}
           initialValue={note?.title}
         >
           <Input />
@@ -126,7 +126,7 @@ function AddNote({
           label="Контент"
           name="content"
           // todo мин 20 символов
-          rules={[{ required: true, message: 'Please input content!' }]}
+          rules={[{ required: true, message: "Please input content!" }]}
         >
           <TextArea rows={4} minLength={3} showCount />
         </Form.Item>
@@ -135,7 +135,7 @@ function AddNote({
           note={note}
         />
         <Button type="primary" htmlType="submit">
-          {note ? 'Сохранить' : 'Добавить заметку'}
+          {note ? "Сохранить" : "Добавить заметку"}
         </Button>
       </Form>
     </>

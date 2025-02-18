@@ -79,7 +79,6 @@ export const loadNotesFromCategory = createAsyncThunk(
   },
 );
 
-// todo слайсы с маленькой буквы (переимновать файл) и переименовать константу +
 export const notesListSlice = createSlice({
   // name ни на что не влияет. Это имя будет отображаться в логах
   name: 'notes',
@@ -108,8 +107,6 @@ export const notesListSlice = createSlice({
           );
         })
         .addCase(addNote.fulfilled, (state, action) => {
-          // todo id генерируется на сервере +
-          // const id = crypto.randomUUID();
           state.notesList.push({ ...action.payload });
         })
         // .addCase(editNote.fulfilled, (state, action) => {

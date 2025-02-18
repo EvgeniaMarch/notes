@@ -1,25 +1,25 @@
-import { EditOutlined, DeleteOutlined, LeftOutlined } from '@ant-design/icons';
-import React, { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { EditOutlined, DeleteOutlined, LeftOutlined } from "@ant-design/icons";
+import React, { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 // import { useAppDispatch } from '../../store/store';
 // import { removeNote } from './notesListSlice';
 
-import './Note.scss';
-import { Tooltip } from 'antd';
-import EditNote from './EditNote';
+import "./Note.scss";
+import { Tooltip } from "antd";
+import EditNote from "./EditNote";
 import {
   useLoadNoteQuery,
   useLoadNotesQuery,
   useRemoveNoteMutation,
-} from './notesListApi';
-import AddNote from './AddNote';
-import { Bounce, ToastContainer } from 'react-toastify';
-import { Note } from './notesListSlice';
+} from "./notesListApi";
+import AddNote from "./AddNote";
+import { Bounce, ToastContainer } from "react-toastify";
+import { Note } from "./notesListSlice";
 
-// todo поправить ошибки ts +
+// todo поправить ошибки ts
 function NotePage() {
   const { id } = useParams();
-  if (!id) throw new Error('id is required!');
+  if (!id) throw new Error("id is required!");
   // const { data } = useLoadNoteQuery(id);
   // const notes = useSelector((state: RootState) => state.notes);
   // const { data: notes, refetch } = useLoadNotesQuery();
@@ -63,7 +63,6 @@ function NotePage() {
             <div>{note?.content}</div>
           </>
         ) : (
-          // todo вынести в отдельный компонент +
           <AddNote note={note} onChangeEditingView={setIsEdit} />
         )}
       </div>

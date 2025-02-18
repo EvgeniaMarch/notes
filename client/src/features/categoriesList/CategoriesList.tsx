@@ -17,8 +17,6 @@ function CategoriesList() {
 
   const { data: categories, error, isLoading } = useLoadCategoriesQuery(); // todo показать тост с ошибкой
 
-  // todo rewrite to rtk query+
-
   // discuss если функция передается в качестве пропса в какой-либо компонент, то обязательно оборачивать в useCallback
   // const onHandleClick = useCallback(
   //   (id: string) => {

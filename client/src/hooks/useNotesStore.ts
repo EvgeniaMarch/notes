@@ -68,10 +68,11 @@ function useNotesStore({
       searchedByCategory &&
       category.name.toLowerCase().includes(searchedByCategory),
   );
-  // todo simplify
 
   const viewedNotes =
     Array.isArray(orderedNotes) &&
+    // todo important simplify
+    // это можно написать так (note) => а дальше одно большое выражение, которое возвращает true или false
     orderedNotes.filter((note) => {
       if (searchedByName && !searchedByCategory) {
         return (

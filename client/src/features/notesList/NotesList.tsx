@@ -12,8 +12,6 @@ import ViewedNotes from './ViewedNotes';
 import useNotesStore from '../../hooks/useNotesStore';
 import { Bounce, toast, ToastContainer } from 'react-toastify';
 
-// todo move logic to custom hook+
-
 function NotesList() {
   const navigate = useNavigate();
 
@@ -25,14 +23,15 @@ function NotesList() {
   } = useLoadCategoriesQuery();
 
   const { id } = useParams();
+  // todo important переместить внутрь useNotesStore
   const { data: allNotes } = useLoadNotesQuery(id);
 
+  // todo important нужно ли здесь useMemo/useCallback и почему?
   const categoryToNote = (id: string | null) => {
     const category = allCategories?.find((category) => category.id === id);
     return category?.name || 'Без категории';
   };
 
-  // todo переместить внутрь оллнотес и стейты +
   // useNotesStore
   const {
     viewedNotes,
@@ -45,11 +44,7 @@ function NotesList() {
   });
 
   return (
-    <div
-      className="container"
-
-      // todo move to css+
-    >
+    <div className="container">
       <SearchNote
         searchedByName={searchedByName}
         setSearchedByName={setSearchedByName}
@@ -66,7 +61,6 @@ function NotesList() {
         <div className="card-wrapper">
           <Row style={{ width: '100%' }}>
             {Array.isArray(viewedNotes) && viewedNotes.length ? (
-              // todo move to separate cmp +
               viewedNotes?.map((note: Note) => {
                 return (
                   <ViewedNotes note={note} categoryToNote={categoryToNote} />

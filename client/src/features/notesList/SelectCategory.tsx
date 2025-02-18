@@ -1,6 +1,6 @@
-import { Form, Select } from 'antd';
-import React, { useMemo } from 'react';
-import { Note } from './notesListSlice';
+import { Form, Select } from "antd";
+import React, { useMemo } from "react";
+import { Note } from "./notesListSlice";
 
 // todo create additional folders inside notesList
 function SelectCategory({
@@ -10,7 +10,6 @@ function SelectCategory({
   categoriesOptions: { value: string; label: string }[];
   note?: Note;
 }) {
-  // todo use useMemo+
   const getInitialValue = useMemo(() => {
     for (const option of categoriesOptions) {
       if (note && option.value === note.id) {
