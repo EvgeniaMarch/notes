@@ -8,7 +8,7 @@ export const categoriesListApi = createApi({
   endpoints: (builder) => ({
     loadCategories: builder.query<Category[], void>({
       query: () => `/categories`,
-      providesTags: (result, error, arg) =>
+      providesTags: (result) =>
         result
           ? [
               ...result.map(({ id }) => ({ type: 'Category' as const, id })),
@@ -17,17 +17,28 @@ export const categoriesListApi = createApi({
           : ['Category'],
     }),
     addCategory: builder.mutation<Category, Omit<Category, 'id'>>({
-      query: (body) => ({
-        url: '/categories',
-        method: 'post',
-        body,
-      }),
+      query: (body) => {
+        console.log('body', body);
+
+        return { url: '/categories', method: 'post', body };
+      },
+      invalidatesTags: ['Category'],
+    }),
+    deleteCategory: builder.mutation<Category[], string>({
+      query: (id) => {
+        console.log('body', id);
+
+        return { url: `/categories/${id}`, method: 'delete', id };
+      },
       invalidatesTags: ['Category'],
     }),
   }),
 });
 
-export const { useLoadCategoriesQuery, useAddCategoryMutation } =
-  categoriesListApi;
+export const {
+  useLoadCategoriesQuery,
+  useAddCategoryMutation,
+  useDeleteCategoryMutation,
+} = categoriesListApi;
 
 // Omit используется как функция для типов - параметризованный тип

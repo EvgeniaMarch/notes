@@ -38,6 +38,7 @@ router.post('/', async (req, res) => {
       data: { name },
     });
     res.status(201).json(category);
+    // res.status(404).json({ error: 'Ошибка при создании категории2' });
   } catch (error) {
     res.status(500).json({ error: 'Ошибка при создании категории' });
   }

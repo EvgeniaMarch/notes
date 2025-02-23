@@ -41,12 +41,12 @@ export const loadNotesFromCategory = createAsyncThunk(
   },
 );
 
-export const addCategory = createAsyncThunk(
-  'categoriesList/addCategory',
-  async (category: Category) => {
-    return await apiAddCategory(category);
-  },
-);
+// export const addCategory = createAsyncThunk(
+//   'categoriesList/addCategory',
+//   async (category: Category) => {
+//     return await apiAddCategory(category);
+//   },
+// );
 
 export const categoriesListSlice = createSlice({
   name: 'categories',
@@ -65,10 +65,10 @@ export const categoriesListSlice = createSlice({
         state.categoriesList = [];
         state.loading = false;
         state.error = 'Что-то пошло не так...:(';
-      })
-      .addCase(addCategory.fulfilled, (state, action) => {
-        state.categoriesList.push({ ...action.payload });
       });
+    // .addCase(addCategory.fulfilled, (state, action) => {
+    //   state.categoriesList.push({ ...action.payload });
+    // });
   },
 });
 

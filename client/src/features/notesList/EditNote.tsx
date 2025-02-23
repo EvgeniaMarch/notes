@@ -2,7 +2,7 @@ import { Button, Form, FormProps } from 'antd';
 import Input from 'antd/es/input/Input';
 import TextArea from 'antd/es/input/TextArea';
 import React, { useMemo } from 'react';
-import { FieldType } from './AddNote';
+import { FieldType } from './AddOrEditNote';
 import { Note } from './notesListSlice';
 import { useParams } from 'react-router-dom';
 import SelectCategory from './SelectCategory';

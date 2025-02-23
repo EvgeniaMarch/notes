@@ -1,50 +1,12 @@
-// const viewedNotes = useMemo(() => {
-//     const foundCategory = allCategories.find(
-//       (category) =>
-//         searchedByCategory &&
-//         category.name.toLowerCase().includes(searchedByCategory),
-//     );
-
-import { RootState, useAppSelector } from '../store/store';
-import { Note } from '../features/notesList/notesListSlice';
 import { useMemo, useState } from 'react';
+import { useLoadNotesQuery } from '../features/notesList/notesListApi';
+import { useParams } from 'react-router-dom';
+import { useLoadCategoriesQuery } from '../features/categoriesList/categoriesListApi';
 
-//     // todo simplify
-//     return (
-//       Array.isArray(orderedNotes) &&
-//       orderedNotes.filter((note) => {
-//         if (searchedByName && !searchedByCategory) {
-//           return (
-//             note.content.toLowerCase().includes(searchedByName) ||
-//             note.title.toLowerCase().includes(searchedByName)
-//           );
-//         }
-//         if (searchedByName && searchedByCategory) {
-//           return (
-//             (note.content.toLowerCase().includes(searchedByName) ||
-//               note.title.toLowerCase().includes(searchedByName)) &&
-//             note.categoryId === foundCategory?.id
-//           );
-//         }
-//         if (!searchedByName && searchedByCategory) {
-//           return note.categoryId === foundCategory?.id;
-//         }
-//         if (!searchedByName && !searchedByCategory) {
-//           return note;
-//         }
-//       })
-//     );
-//   }, [allCategories, orderedNotes, searchedByCategory, searchedByName]);
-
-function useNotesStore({
-  allNotes,
-}: // searchedByCategory,
-// searchedByName,
-{
-  allNotes: 0 | Note[] | undefined;
-  // searchedByCategory: string | null;
-  // searchedByName: string | null;
-}) {
+function useNotesStore() {
+  const { id } = useParams();
+  const { data: allNotes } = useLoadNotesQuery(id);
+  const { data: allCategories } = useLoadCategoriesQuery();
   const [searchedByName, setSearchedByName] = useState<string | null>(null);
   const [searchedByCategory, setSearchedByCategory] = useState<string | null>(
     null,
@@ -59,11 +21,8 @@ function useNotesStore({
       }),
     [allNotes],
   );
-  const allCategories = useAppSelector(
-    (state: RootState) => state.categories.categoriesList,
-  );
 
-  const foundCategory = allCategories.find(
+  const foundCategory = allCategories?.find(
     (category) =>
       searchedByCategory &&
       category.name.toLowerCase().includes(searchedByCategory),
@@ -94,6 +53,7 @@ function useNotesStore({
         return note;
       }
     });
+
   return {
     viewedNotes,
     searchedByName,

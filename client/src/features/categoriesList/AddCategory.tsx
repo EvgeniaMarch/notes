@@ -1,12 +1,8 @@
-import { Input, Button, FormProps, Form } from "antd";
-import { useNavigate } from "react-router-dom";
-import // useAddCategoryMutation,
-// useLoadCategoriesQuery,
-"../notesList/notesListApi";
-import {
-  useAddCategoryMutation,
-  useLoadCategoriesQuery,
-} from "./categoriesListApi";
+import { Input, Button, FormProps, Form } from 'antd';
+import { useNavigate } from 'react-router-dom';
+
+import { useAddCategoryMutation } from './categoriesListApi';
+import { Bounce, toast } from 'react-toastify';
 
 export type FieldType = {
   name: string;
@@ -14,18 +10,41 @@ export type FieldType = {
 
 function AddCategory() {
   const navigate = useNavigate();
-  // const { refetch } = useLoadCategoriesQuery();
-  const [addCategory] = useAddCategoryMutation(); // todo important показать успешный тост или тост с ошибкой
-  const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
-    await addCategory(values);
+  const [addCategory, { isError, isSuccess }] = useAddCategoryMutation(); // todo important показать успешный тост или тост с ошибкой +
+  const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
+    try {
+      await addCategory(values);
+      toast('New category was added', {
+        position: 'top-center',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'light',
+        transition: Bounce,
+      });
+    } catch (e) {
+      console.error(e);
+      toast(e.error, {
+        position: 'top-center',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'light',
+        transition: Bounce,
+      });
+    }
     navigate(`/`);
-    // refetch();
   };
+  console.log('isError', isError, isSuccess);
 
-  const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (
-    errorInfo
+  const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
+    errorInfo,
   ) => {
-    console.log("Failed:", errorInfo);
+    console.log('Failed:', errorInfo);
   };
   return (
     <Form
@@ -38,7 +57,7 @@ function AddCategory() {
       <Form.Item
         label="Название"
         name="name"
-        rules={[{ required: true, message: "Please input name!" }]}
+        rules={[{ required: true, message: 'Please input name!' }]}
       >
         <Input />
       </Form.Item>

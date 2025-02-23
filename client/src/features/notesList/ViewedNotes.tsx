@@ -9,7 +9,7 @@ function ViewedNotes({ note, categoryToNote }) {
     <Col style={{ width: '33%' }} key={note.id}>
       <Card
         title={note.title}
-        onClick={() => navigate(`/note/${note.id}`)}
+        onClick={() => navigate(`/notes/${note.id}`)}
         className="card-wrapper__card"
         hoverable
       >

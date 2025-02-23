@@ -1,16 +1,13 @@
 import { Button, Row, Skeleton } from 'antd';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './NotesList.scss';
-import { useAppSelector } from '../../store/store';
-import { useMemo, useState } from 'react';
 import { Note } from './notesListSlice';
 import SearchNote from './SearchNote';
 import CategoryFilter from './CategoryFilter';
-import { useLoadNotesQuery } from './notesListApi';
 import { useLoadCategoriesQuery } from '../categoriesList/categoriesListApi';
 import ViewedNotes from './ViewedNotes';
 import useNotesStore from '../../hooks/useNotesStore';
-import { Bounce, toast, ToastContainer } from 'react-toastify';
+import { useCallback } from 'react';
 
 function NotesList() {
   const navigate = useNavigate();
@@ -22,26 +19,23 @@ function NotesList() {
     isLoading: loading,
   } = useLoadCategoriesQuery();
 
-  const { id } = useParams();
-  // todo important переместить внутрь useNotesStore
-  const { data: allNotes } = useLoadNotesQuery(id);
-
   // todo important нужно ли здесь useMemo/useCallback и почему?
-  const categoryToNote = (id: string | null) => {
-    const category = allCategories?.find((category) => category.id === id);
-    return category?.name || 'Без категории';
-  };
+  // нужен потому что мы передаем эту функцию в качестве пропса в другой компонент
+  const categoryToNote = useCallback(
+    (id: string | null) => {
+      const category = allCategories?.find((category) => category.id === id);
+      return category?.name || 'Без категории';
+    },
+    [allCategories],
+  );
 
-  // useNotesStore
   const {
     viewedNotes,
     searchedByName,
     setSearchedByName,
     searchedByCategory,
     setSearchedByCategory,
-  } = useNotesStore({
-    allNotes,
-  });
+  } = useNotesStore();
 
   return (
     <div className="container">
@@ -63,7 +57,11 @@ function NotesList() {
             {Array.isArray(viewedNotes) && viewedNotes.length ? (
               viewedNotes?.map((note: Note) => {
                 return (
-                  <ViewedNotes note={note} categoryToNote={categoryToNote} />
+                  <ViewedNotes
+                    key={note.id}
+                    note={note}
+                    categoryToNote={categoryToNote}
+                  />
                 );
               })
             ) : (
@@ -74,24 +72,11 @@ function NotesList() {
       )}
       <Button
         onClick={() => {
-          navigate('/new-note');
+          navigate('/notes/new');
         }}
       >
         Добавить заметку
       </Button>
-      {/* <ToastContainer
-        position="top-left"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick={false}
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-        transition={Bounce}
-      /> */}
     </div>
   );
 }
