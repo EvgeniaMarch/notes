@@ -8,7 +8,8 @@ import SelectCategory from './SelectCategory';
 import { useAddNoteMutation, useEditNoteMutation } from './notesListApi';
 import { useLoadCategoriesQuery } from '../categoriesList/categoriesListApi';
 import { Note } from './notesListSlice';
-import { Bounce, toast } from 'react-toastify';
+import { isFetchError } from '../../helpers/isFetchingError';
+import { showToast } from '../../helpers/showToast';
 
 export type FieldType = {
   title: string;
@@ -25,7 +26,7 @@ function AddOrEditNote({
   onChangeEditingView?: (data: boolean) => void;
 }) {
   const navigate = useNavigate();
-  const [addNote, { isSuccess }] = useAddNoteMutation();
+  const [addNote] = useAddNoteMutation();
   const { data: categories } = useLoadCategoriesQuery();
   const { id } = useParams();
   if (!id && note) throw new Error('id is required!');
@@ -57,65 +58,29 @@ function AddOrEditNote({
             categoryId: newCategory ?? null,
           }).unwrap();
         }
-        toast('Note was edited', {
-          position: 'top-center',
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: false,
-          pauseOnHover: true,
-          draggable: true,
-          theme: 'light',
-          transition: Bounce,
-        });
-        console.log('isSuccess-1', isSuccess);
+        showToast('Note was edited');
       } catch (e) {
-        toast(e, {
-          position: 'top-center',
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: false,
-          pauseOnHover: true,
-          draggable: true,
-          theme: 'light',
-          transition: Bounce,
-        });
+        if (isFetchError(e)) {
+          showToast(e.data.error);
+        }
       }
 
       onChangeEditingView(false);
     } else {
       const newCategory = category || null;
       try {
-        await addNote({ content, title, categoryId: newCategory }).then(() =>
-          navigate(`/notes`),
+        await addNote({ content, title, categoryId: newCategory }).unwrap();
+        navigate(
+          newCategory ? `/categories/${newCategory}` : '/categories/none',
         );
-        toast('Note created!!', {
-          position: 'top-center',
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: false,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: 'light',
-          transition: Bounce,
-        });
+        showToast('Note created!!');
       } catch (e) {
-        toast(e, {
-          position: 'top-center',
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: false,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: 'light',
-          transition: Bounce,
-        });
+        if (isFetchError(e)) {
+          showToast(e.data.error);
+        }
       }
     }
   };
-
-  console.log('isSuccess-2', isSuccess);
 
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
     errorInfo,

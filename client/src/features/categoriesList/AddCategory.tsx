@@ -2,7 +2,8 @@ import { Input, Button, FormProps, Form } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
 import { useAddCategoryMutation } from './categoriesListApi';
-import { Bounce, toast } from 'react-toastify';
+import { isFetchError } from '../../helpers/isFetchingError';
+import { showToast } from '../../helpers/showToast';
 
 export type FieldType = {
   name: string;
@@ -10,36 +11,22 @@ export type FieldType = {
 
 function AddCategory() {
   const navigate = useNavigate();
-  const [addCategory, { isError, isSuccess }] = useAddCategoryMutation(); // todo important показать успешный тост или тост с ошибкой +
+  const [addCategory] = useAddCategoryMutation(); // todo important показать успешный тост или тост с ошибкой +
+
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     try {
-      await addCategory(values);
-      toast('New category was added', {
-        position: 'top-center',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-        theme: 'light',
-        transition: Bounce,
-      });
+      await addCategory(values).unwrap();
+      // todo упростить, написать функцию-обертку, куда преедаю сообщение, а она вызввает toast+
+
+      showToast('New category was added');
     } catch (e) {
       console.error(e);
-      toast(e.error, {
-        position: 'top-center',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-        theme: 'light',
-        transition: Bounce,
-      });
+      if (isFetchError(e)) {
+        showToast(e.data.error);
+      }
     }
     navigate(`/`);
   };
-  console.log('isError', isError, isSuccess);
 
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
     errorInfo,

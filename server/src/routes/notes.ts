@@ -53,6 +53,7 @@ router.post('/', async (req, res) => {
       },
     });
     res.status(201).json(note);
+    // res.status(404).json({ error: 'Ошибка при создании заметки2' });
   } catch (error) {
     res.status(500).json({ error: 'Ошибка при создании заметки' });
   }

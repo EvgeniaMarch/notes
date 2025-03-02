@@ -13,10 +13,8 @@ export const notesListApi = createApi({
         method: 'post',
         body: body,
       }),
-      // todo important
+      // todo important (проверить)+
       invalidatesTags: (arg) => {
-        console.log('arg', arg);
-
         return [
           { type: 'Notes', id: `${arg?.categoryId}_category` },
           { type: 'Notes', id: 'LIST' },
@@ -25,10 +23,28 @@ export const notesListApi = createApi({
       // id: body.categoryId, обновить LIST
       // если создается заметка без категории, то id: no_category
     }),
+    findNotes: builder.query<Note[], string | null>({
+      query: (search) => {
+        return {
+          url: `/notes`,
+          method: 'get',
+          params: { search },
+        };
+      },
+      providesTags: (result, error, arg) => {
+        console.log('result', arg);
+
+        return [{ type: 'Notes', id: 'LIST' }];
+      },
+    }),
     loadNote: builder.query<Note, string>({
-      query: (id) => ({
-        url: `/notes/${id}`,
-      }),
+      query: (id) => {
+        console.log('id', id);
+
+        return {
+          url: `/notes/${id}`,
+        };
+      },
       providesTags: (result, error, id) => [{ type: 'Notes', id }],
     }),
     loadNotes: builder.query<Note[], string | void>({
@@ -36,6 +52,7 @@ export const notesListApi = createApi({
         categoryId ? `/categories/${categoryId}/notes` : `/notes`,
       providesTags: (result, error, arg) => {
         console.log('arg-load', arg);
+        console.log('result', result);
 
         return [
           ...(result ?? []).map(({ id }) => ({ type: 'Notes' as const, id })),
@@ -84,4 +101,5 @@ export const {
   useAddNoteMutation,
   useEditNoteMutation,
   useLoadNoteQuery,
+  useFindNotesQuery,
 } = notesListApi;

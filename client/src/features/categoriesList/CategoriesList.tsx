@@ -21,7 +21,7 @@ function CategoriesList() {
   const { data: categories, error, isLoading } = useLoadCategoriesQuery(); // todo показать тост с ошибкой
 
   const handleNavigateToNoCategoty = useCallback(
-    () => navigate(`/categories/no-category`),
+    () => navigate(`/categories/none`),
     [navigate],
   );
   const handleNavigateToNotes = useCallback(
@@ -32,7 +32,6 @@ function CategoriesList() {
     () => navigate('/categories/new'),
     [navigate],
   );
-
   return (
     <>
       <Typography.Text>Категории</Typography.Text>

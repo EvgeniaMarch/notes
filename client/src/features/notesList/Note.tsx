@@ -17,9 +17,7 @@ function NotePage() {
   const navigate = useNavigate();
   const handleDelete = async (id: string) => {
     await removeNote(id).then(() =>
-      navigate(
-        `/categories/${note?.categoryId ? note.categoryId : 'no-category'}`,
-      ),
+      navigate(`/categories/${note?.categoryId ? note.categoryId : 'none'}`),
     );
   };
 

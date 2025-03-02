@@ -1,8 +1,15 @@
 import { Card, Col, Typography } from 'antd';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Note } from './notesListSlice';
 
-function ViewedNotes({ note, categoryToNote }) {
+function ViewedNotes({
+  note,
+  categoryToNote,
+}: {
+  note: Note;
+  categoryToNote: (id: string | null) => string;
+}) {
   const navigate = useNavigate();
 
   return (

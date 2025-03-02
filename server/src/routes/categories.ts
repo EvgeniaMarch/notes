@@ -76,7 +76,7 @@ router.get('/:id/notes', async (req, res) => {
     const search = req.query.search as string | undefined;
     const notes = await prisma.note.findMany({
       where: {
-        categoryId: req.params.id === 'no-category' ? null : req.params.id,
+        categoryId: req.params.id === 'none' ? null : req.params.id,
         OR:
           search === undefined
             ? undefined
