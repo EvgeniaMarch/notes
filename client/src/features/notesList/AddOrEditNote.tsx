@@ -8,7 +8,7 @@ import SelectCategory from './SelectCategory';
 import { useAddNoteMutation, useEditNoteMutation } from './notesListApi';
 import { useLoadCategoriesQuery } from '../categoriesList/categoriesListApi';
 import { Note } from './notesListSlice';
-import { isFetchError } from '../../helpers/isFetchingError';
+import { isFetchError } from '../../helpers/errors';
 import { showToast } from '../../helpers/showToast';
 
 export type FieldType = {

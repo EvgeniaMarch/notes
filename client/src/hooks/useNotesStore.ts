@@ -59,5 +59,5 @@ function useNotesStore() {
 
 export default useNotesStore;
 
-const includesStr = (text: string, find: string) =>
-  text.toLowerCase().includes(find);
+// const includesStr = (text: string, find: string) =>
+//   text.toLowerCase().includes(find);

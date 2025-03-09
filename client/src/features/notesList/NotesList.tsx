@@ -7,6 +7,7 @@ import { useLoadCategoriesQuery } from '../categoriesList/categoriesListApi';
 import ViewedNotes from './ViewedNotes';
 import useNotesStore from '../../hooks/useNotesStore';
 import { useCallback } from 'react';
+import { getErrorMessage } from '../../helpers/errors';
 
 function NotesList() {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ function NotesList() {
         setSearchedByName={setSearchedByName}
       />
       {isError ? (
-        <div>{error}</div>
+        <div>{getErrorMessage(error)}</div>
       ) : isLoadingNotes ? (
         <Skeleton />
       ) : (

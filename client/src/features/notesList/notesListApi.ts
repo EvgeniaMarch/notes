@@ -25,11 +25,13 @@ export const notesListApi = createApi({
     }),
     findNotes: builder.query<Note[], string | null>({
       query: (search) => {
-        return {
-          url: `/notes`,
-          method: 'get',
-          params: { search },
-        };
+        return search
+          ? {
+              url: `/notes`,
+              method: 'get',
+              params: { search },
+            }
+          : `/notes`;
       },
       providesTags: (result, error, arg) => {
         console.log('result', arg);

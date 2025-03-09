@@ -2,7 +2,7 @@ import { Input, Button, FormProps, Form } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
 import { useAddCategoryMutation } from './categoriesListApi';
-import { isFetchError } from '../../helpers/isFetchingError';
+import { isFetchError } from '../../helpers/errors';
 import { showToast } from '../../helpers/showToast';
 
 export type FieldType = {
