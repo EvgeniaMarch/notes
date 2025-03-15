@@ -1,18 +1,20 @@
-import { useMemo, useState } from 'react';
-import {
-  useFindNotesQuery,
-  useLoadNotesQuery,
-} from '../features/notesList/notesListApi';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../store/store';
+import { findNotes, loadNotes } from '../features/notesList/notesListSlice';
 
 function useNotesStore() {
   const { id } = useParams();
   const [searchedByName, setSearchedByName] = useState<string | null>(null);
-  const { data: allNotes, isLoading: isLoadingNotes } = useLoadNotesQuery(id);
-  // const { data: allCategories } = useLoadCategoriesQuery();
-  // const [searchedByCategory, setSearchedByCategory] = useState<string | null>(
-  //   null,
-  // );
+
+  const allNotes = useAppSelector((state) => state.notes.notesList);
+  const isLoadingNotes = useAppSelector((state) => state.notes.loading);
+  const isError = useAppSelector((state) => state.notes.error);
+
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    dispatch(loadNotes(id));
+  }, [dispatch, id]);
   const orderedNotes = useMemo(
     () =>
       allNotes &&
@@ -24,8 +26,11 @@ function useNotesStore() {
     [allNotes],
   );
 
-  const { data: findedNotes } = useFindNotesQuery(searchedByName);
-
+  useEffect(() => {
+    if (searchedByName) {
+      dispatch(findNotes(searchedByName));
+    }
+  }, [dispatch, searchedByName]);
   // const foundCategory = allCategories?.find(
   //   (category) =>
   //     searchedByCategory &&
@@ -45,12 +50,14 @@ function useNotesStore() {
   //     );
   //   });
 
-  const viewedNotes = findedNotes?.length ? findedNotes : orderedNotes;
+  // const viewedNotes = findedNotes?.length ? findedNotes : orderedNotes;
+  const viewedNotes = orderedNotes;
 
   return {
     viewedNotes,
     searchedByName,
     setSearchedByName,
+    isError,
     // searchedByCategory,
     // setSearchedByCategory,
     isLoadingNotes,

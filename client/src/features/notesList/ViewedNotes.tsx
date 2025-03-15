@@ -1,5 +1,5 @@
-import { Card, Col, Typography } from 'antd';
 import React from 'react';
+import { Card, Col, Typography } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { Note } from './notesListSlice';
 

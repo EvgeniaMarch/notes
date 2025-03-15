@@ -1,7 +1,9 @@
 import { Note } from './notesListSlice';
 
-export async function apiLoadNotes(): Promise<Note[]> {
-  const response = await fetch('/api/notes');
+export async function apiLoadNotes(id?: string): Promise<Note[]> {
+  const response = await fetch(
+    id ? `/api/categories/${id}/notes` : `/api/notes`,
+  );
   // console.log('response', response);
   if (!response.ok) {
     throw new Error((await response.json()).error);
@@ -46,23 +48,10 @@ export async function apiLoadNotesFromCategory(id: string): Promise<Note[]> {
   return response.json();
 }
 
-// export async function apiSearched(search='': string): Promise<Note[]> {
-//   console.log('search', search);
-
-//   const response = await fetch('/api/notes');
-//   console.log('response', response);
-//   if (!response.ok) {
-//     throw new Error((await response.json()).error);
-//   }
-//   const notes = await response.json();
-//   if (search === '') return notes;
-//   else {
-//     return notes.filter(
-//       (note) =>
-//         note.content.toLowerCase().includes(search) ||
-//         note.title.toLowerCase().includes(search),
-//       // note.categoryId === foundCategory?.id,
-//     );
-//   }
-//   // return notes;
-// }
+export async function apiFind(search: string): Promise<Note[]> {
+  const searchComp = encodeURIComponent(search);
+  const response = await fetch(`/api/notes/?search=${searchComp}`, {
+    method: 'get',
+  });
+  return response.json();
+}

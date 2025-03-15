@@ -5,11 +5,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import './AddNote.scss';
 import SelectCategory from './SelectCategory';
-import { useAddNoteMutation, useEditNoteMutation } from './notesListApi';
 import { useLoadCategoriesQuery } from '../categoriesList/categoriesListApi';
-import { Note } from './notesListSlice';
+import { addNote, editNote, Note } from './notesListSlice';
 import { isFetchError } from '../../helpers/errors';
 import { showToast } from '../../helpers/showToast';
+import { useAppDispatch } from '../../store/store';
 
 export type FieldType = {
   title: string;
@@ -25,13 +25,14 @@ function AddOrEditNote({
   note?: Note;
   onChangeEditingView?: (data: boolean) => void;
 }) {
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [addNote] = useAddNoteMutation();
+  // const [addNote] = useAddNoteMutation();
   const { data: categories } = useLoadCategoriesQuery();
   const { id } = useParams();
   if (!id && note) throw new Error('id is required!');
 
-  const [editNote] = useEditNoteMutation();
+  // const [editNote] = useEditNoteMutation();
   console.log('categories', categories);
 
   const categoriesOptions = useMemo(
@@ -50,13 +51,15 @@ function AddOrEditNote({
 
       try {
         if (id) {
-          editNote({
-            ...note,
-            content,
-            title,
-            id,
-            categoryId: newCategory ?? null,
-          }).unwrap();
+          await dispatch(
+            editNote({
+              ...note,
+              content,
+              title,
+              id,
+              categoryId: newCategory ?? null,
+            }),
+          );
         }
         showToast('Note was edited');
       } catch (e) {
@@ -69,7 +72,7 @@ function AddOrEditNote({
     } else {
       const newCategory = category || null;
       try {
-        await addNote({ content, title, categoryId: newCategory }).unwrap();
+        await dispatch(addNote({ content, title, categoryId: newCategory }));
         navigate(
           newCategory ? `/categories/${newCategory}` : '/categories/none',
         );

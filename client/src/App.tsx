@@ -9,8 +9,6 @@ import AddCategory from './features/categoriesList/AddCategory';
 import { Bounce, ToastContainer } from 'react-toastify';
 
 function App() {
-  // todo important сделать пути по ресту +
-
   return (
     <>
       <BrowserRouter>

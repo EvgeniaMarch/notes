@@ -7,12 +7,9 @@ import { useLoadCategoriesQuery } from '../categoriesList/categoriesListApi';
 import ViewedNotes from './ViewedNotes';
 import useNotesStore from '../../hooks/useNotesStore';
 import { useCallback } from 'react';
-import { getErrorMessage } from '../../helpers/errors';
-
 function NotesList() {
+  const { data: allCategories } = useLoadCategoriesQuery();
   const navigate = useNavigate();
-
-  const { data: allCategories, isError, error } = useLoadCategoriesQuery();
 
   // todo important нужно ли здесь useMemo/useCallback и почему? +
   // нужен потому что мы передаем эту функцию в качестве пропса в другой компонент
@@ -24,8 +21,13 @@ function NotesList() {
     [allCategories],
   );
 
-  const { viewedNotes, searchedByName, setSearchedByName, isLoadingNotes } =
-    useNotesStore();
+  const {
+    viewedNotes,
+    searchedByName,
+    setSearchedByName,
+    isLoadingNotes,
+    isError,
+  } = useNotesStore();
 
   return (
     <div className="container">
@@ -34,7 +36,7 @@ function NotesList() {
         setSearchedByName={setSearchedByName}
       />
       {isError ? (
-        <div>{getErrorMessage(error)}</div>
+        <div>{isError}</div>
       ) : isLoadingNotes ? (
         <Skeleton />
       ) : (

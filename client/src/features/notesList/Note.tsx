@@ -1,22 +1,26 @@
 import { EditOutlined, DeleteOutlined, LeftOutlined } from '@ant-design/icons';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import './Note.scss';
 import { Tooltip } from 'antd';
-import { useLoadNoteQuery, useRemoveNoteMutation } from './notesListApi';
 import AddOrEditNote from './AddOrEditNote';
+import { useAppDispatch, useAppSelector } from '../../store/store';
+import { removeNote } from './notesListSlice';
 // todo поправить ошибки ts
 function NotePage() {
   const { id } = useParams();
   if (!id) throw new Error('id is required!');
-  const [removeNote] = useRemoveNoteMutation();
-
-  const { data: note } = useLoadNoteQuery(id);
+  const dispatch = useAppDispatch();
+  const notes = useAppSelector((state) => state.notes.notesList);
+  const note = notes.find((note) => note.id === id);
 
   const navigate = useNavigate();
   const handleDelete = async (id: string) => {
-    await removeNote(id).then(() =>
+    // await removeNote(id).then(() =>
+    //   navigate(`/categories/${note?.categoryId ? note.categoryId : 'none'}`),
+    // );
+    dispatch(removeNote(id)).then(() =>
       navigate(`/categories/${note?.categoryId ? note.categoryId : 'none'}`),
     );
   };
